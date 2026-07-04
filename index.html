@@ -3,79 +3,104 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>俄罗斯方块 - Tetris</title>
+  <title>Tetris</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+  <script src="i18n.js"></script>
 </head>
 <body>
   <div class="game-container">
     <div class="game-header">
-      <h1 class="game-title">TETRIS</h1>
-      <p class="game-subtitle">俄罗斯方块</p>
+      <div class="header-titles">
+        <h1 class="game-title" data-i18n="title">TETRIS</h1>
+        <p class="game-subtitle" data-i18n="subtitle">俄罗斯方块</p>
+      </div>
+      <div class="lang-menu">
+        <button id="langMenuBtn" class="lang-menu-btn" data-i18n-aria="langLabel" aria-label="语言" aria-haspopup="true" aria-expanded="false">
+          <span class="lang-menu-icon">🌐</span>
+          <span class="lang-menu-label" id="langMenuLabel">简体中文</span>
+          <span class="lang-menu-arrow">▾</span>
+        </button>
+        <ul id="langMenuList" class="lang-menu-list" role="menu" hidden></ul>
+      </div>
     </div>
 
     <div class="game-main">
       <div class="game-left">
         <div class="game-board-wrapper">
           <canvas id="gameCanvas" width="300" height="600"></canvas>
+          <div class="clear-text" id="clearText"></div>
           <div class="game-overlay" id="gameOverlay">
             <div class="overlay-content">
-              <h2 id="overlayTitle">准备开始</h2>
-              <p id="overlayMessage">按下开始按钮或空格键开始游戏</p>
+              <h2 id="overlayTitle" data-i18n="overlayReady">准备开始</h2>
+              <p id="overlayMessage" data-i18n="overlayReadyMsg">按下开始按钮或空格键开始游戏</p>
             </div>
           </div>
         </div>
 
         <div class="control-panel">
-          <button id="startBtn" class="btn btn-primary">开始游戏</button>
-          <button id="pauseBtn" class="btn btn-secondary" disabled>暂停</button>
-          <button id="resetBtn" class="btn btn-tertiary">重新开始</button>
+          <button id="startBtn" class="btn btn-primary" data-i18n="startBtn">开始游戏</button>
+          <button id="pauseBtn" class="btn btn-secondary" disabled data-i18n="pauseBtn">暂停</button>
+          <button id="resetBtn" class="btn btn-tertiary" data-i18n="resetBtn">重新开始</button>
+          <button id="muteBtn" class="btn btn-tertiary" data-i18n-aria="muteBtn" aria-label="静音切换">🔊</button>
         </div>
       </div>
 
       <div class="game-sidebar">
         <div class="info-panel">
           <div class="info-block">
-            <span class="info-label">分数</span>
+            <span class="info-label" data-i18n="score">分数</span>
             <span class="info-value" id="scoreValue">0</span>
           </div>
           <div class="info-block">
-            <span class="info-label">等级</span>
+            <span class="info-label" data-i18n="highScore">最高分</span>
+            <span class="info-value info-value-sm" id="highScoreValue">0</span>
+          </div>
+          <div class="info-block">
+            <span class="info-label" data-i18n="level">等级</span>
             <span class="info-value" id="levelValue">1</span>
           </div>
           <div class="info-block">
-            <span class="info-label">行数</span>
+            <span class="info-label" data-i18n="lines">行数</span>
             <span class="info-value" id="linesValue">0</span>
           </div>
         </div>
 
         <div class="next-piece-panel">
-          <span class="panel-title">下一个</span>
+          <span class="panel-title"><span data-i18n="hold">暂存</span> (C)</span>
+          <canvas id="holdCanvas" width="120" height="120"></canvas>
+        </div>
+
+        <div class="next-piece-panel">
+          <span class="panel-title" data-i18n="next">下一个</span>
           <canvas id="nextCanvas" width="120" height="120"></canvas>
         </div>
 
         <div class="help-panel">
-          <span class="panel-title">操作说明</span>
-          <div class="help-item"><span class="key">←→</span> 左右移动</div>
-          <div class="help-item"><span class="key">↑</span> 旋转方块</div>
-          <div class="help-item"><span class="key">↓</span> 加速下落</div>
-          <div class="help-item"><span class="key">空格</span> 直接落底</div>
-          <div class="help-item"><span class="key">P</span> 暂停/继续</div>
+          <span class="panel-title" data-i18n="help">操作说明</span>
+          <div class="help-item"><span class="key">←→</span> <span data-i18n="helpMove">左右移动</span></div>
+          <div class="help-item"><span class="key">↑/X</span> <span data-i18n="helpRotateCw">顺时针旋转</span></div>
+          <div class="help-item"><span class="key">Z</span> <span data-i18n="helpRotateCcw">逆时针旋转</span></div>
+          <div class="help-item"><span class="key">↓</span> <span data-i18n="helpDown">加速下落</span></div>
+          <div class="help-item"><span class="key">空格</span> <span data-i18n="helpDrop">直接落底</span></div>
+          <div class="help-item"><span class="key">C</span> <span data-i18n="helpHold">暂存方块</span></div>
+          <div class="help-item"><span class="key">P</span> <span data-i18n="helpPause">暂停/继续</span></div>
         </div>
       </div>
     </div>
 
     <div class="mobile-controls">
       <div class="mobile-row">
-        <button class="mobile-btn" id="rotateBtn">↻</button>
+        <button class="mobile-btn" id="holdBtn" data-i18n-aria="mobileHold" aria-label="暂存方块">H</button>
+        <button class="mobile-btn" id="rotateBtn" data-i18n-aria="mobileRotate" aria-label="旋转方块">↻</button>
       </div>
       <div class="mobile-row">
-        <button class="mobile-btn" id="leftBtn">←</button>
-        <button class="mobile-btn" id="downBtn">↓</button>
-        <button class="mobile-btn" id="rightBtn">→</button>
+        <button class="mobile-btn" id="leftBtn" data-i18n-aria="mobileLeft" aria-label="左移">←</button>
+        <button class="mobile-btn" id="downBtn" data-i18n-aria="mobileDown" aria-label="加速下落">↓</button>
+        <button class="mobile-btn" id="rightBtn" data-i18n-aria="mobileRight" aria-label="右移">→</button>
       </div>
       <div class="mobile-row">
-        <button class="mobile-btn mobile-btn-wide" id="dropBtn">落底</button>
+        <button class="mobile-btn mobile-btn-wide" id="dropBtn" data-i18n="mobileDrop" aria-label="直接落底">落底</button>
       </div>
     </div>
   </div>
